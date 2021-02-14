@@ -1,0 +1,16 @@
+{
+    "name": "abdelrhman/jwtpkg",
+    "description": "pkg to generate, set, verify JWTs",
+    "authors": [
+        {
+            "name": "abdelrhman",
+            "email": "bedosaeed65@gmai.com",
+            "role": "backend-developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "abdelrhman\\jwtpkg\\": "src/"
+        }
+    }
+}
