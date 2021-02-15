@@ -8,13 +8,14 @@ class jwt {
                     $payload;
 
     private string  $secret,
-                    $signature,
 
                     $jsonHeader,
                     $jsonPayload,
 
                     $base64_header,
                     $base64_payload,
+
+                    $signature,
                     
                     $token;
     
@@ -55,17 +56,21 @@ class jwt {
     private function formJsonAsBase64Encode(): self {
 
         $this->base64_header = $this->sanitize(
-            base64_encode($this->jsonHeader) );
+
+            base64_encode($this->jsonHeader)
+        );
             
         $this->base64_payload = $this->sanitize(
-            base64_encode($this->jsonPayload) );
+
+            base64_encode($this->jsonPayload)
+        );
 
         return $this;
     }
 
     private function sanitize(string $base64): string {
 
-        return str_replace( [ "+", "/", "=" ], [ "-", "_", "" ], $base64 );
+        return str_replace( [ '+', '/', '=' ], [ '-', '_', '' ], $base64 );
 
     }
 
@@ -76,7 +81,7 @@ class jwt {
 
             "sha256",
 
-            $this->base64_header . $this->base64_payload,
+            $this->base64_header .".". $this->base64_payload,
 
             $this->secret,
 
@@ -85,7 +90,8 @@ class jwt {
         );
 
         $this->signature = $this->sanitize(
-            base64_encode($this->signature));
+            base64_encode($this->signature)
+        );
 
 
         return $this;
@@ -96,7 +102,7 @@ class jwt {
         $this->formTokenAsJson()
             ->formJsonAsBase64Encode()
             ->generateSignature();
-
+        
         $this->token = $this->base64_header . "." . $this->base64_payload . "."
             . $this->signature;
 
@@ -112,8 +118,8 @@ class jwt {
     }
 
     public function printTokenComponenets(): void {
-        echo "<pre>";
+        
         print_r($this->getTokenComponenets());
-        echo "</pre>";
+
     }
 }
