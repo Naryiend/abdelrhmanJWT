@@ -19,14 +19,12 @@ class jwt {
                     $token;
     
 
-    public function __construct() {}
-
     public function setHeader(string $alg = "HS256", string $tokenTyp = "JWT"): self {
 
         $this->header = [
 
-            "alg" => $alg,
-            "typ" => $tokenTyp
+            "typ" => $tokenTyp,
+            "alg" => $alg
         ];
 
         return $this;
@@ -54,12 +52,6 @@ class jwt {
     }
 
 
-    private function sanitize(string $base64): string {
-
-        return str_replace( [ "+", "/", "=" ], [ "-", "_", "" ], $base64 );
-
-    }
-
     private function formJsonAsBase64Encode(): self {
 
         $this->base64_header = $this->sanitize(
@@ -71,31 +63,44 @@ class jwt {
         return $this;
     }
 
+    private function sanitize(string $base64): string {
 
-    public function generateSignature(bool $encryptSignature): self {
+        return str_replace( [ "+", "/", "=" ], [ "-", "_", "" ], $base64 );
+
+    }
+
+
+    public function generateSignature(): self {
 
         $this->signature = hash_hmac(
-            "sha256", $this->base64_header . $this->base64_payload, $this->secret, true
+
+            "sha256",
+
+            $this->base64_header . $this->base64_payload,
+
+            $this->secret,
+
+            true
+
         );
 
-        if ($encryptSignature)
-        {
-            $this->signature = $this->sanitize(
-                base64_encode($this->signature));
-        }
+        $this->signature = $this->sanitize(
+            base64_encode($this->signature));
+
 
         return $this;
     }
 
-    public function generateToken(bool $encryptSignature = false): void {
+    public function generateToken(): self {
 
         $this->formTokenAsJson()
             ->formJsonAsBase64Encode()
-            ->generateSignature($encryptSignature);
+            ->generateSignature();
 
         $this->token = $this->base64_header . "." . $this->base64_payload . "."
             . $this->signature;
 
+        return $this;
     }
 
     public function getToken(): string {
@@ -103,13 +108,7 @@ class jwt {
     }
 
     public function getTokenComponenets(): array {
-
-        echo $this->token;
-        preg_match_all(
-            "/\.*\w+\.*/", $this->token, $componenets
-        );
-
-        return $componenets;
+        return explode(".", $this->token);
     }
 
     public function printTokenComponenets(): void {
